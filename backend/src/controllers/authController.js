@@ -6,7 +6,7 @@ const signToken = (id) => {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 };
-// sending token
+// sending
 const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
 
