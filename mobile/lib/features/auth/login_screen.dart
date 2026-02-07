@@ -24,8 +24,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           SnackBar(content: Text(next.error.toString())),
         );
       } else if (!next.isLoading && !next.hasError && previous?.isLoading == true) {
-         // Success
-         context.go('/home');
+         // Success - check user role for navigation
+         final user = ref.read(currentUserProvider);
+         if (user != null && user.isAdmin) {
+           context.go('/admin');
+         } else {
+           context.go('/home');
+         }
       }
     });
 
@@ -33,77 +38,146 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = authState.isLoading;
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  'Welcome Back!',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                   // Logo or Icon
+                  Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF55C57A).withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.travel_explore,
+                      size: 50,
+                      color: Color(0xFF55C57A),
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Welcome Back',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.5,
+                      color: Color(0xFF333333),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          if (_formKey.currentState!.validate()) {
-                            ref.read(authControllerProvider.notifier).login(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-                          }
-                        },
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Text('Login'),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () => context.push('/signup'),
-                  child: const Text('Don\'t have an account? Sign up'),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    'Sign in to continue your adventure',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email Address',
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty || !value.contains('@')) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              ref.read(authControllerProvider.notifier).login(
+                                    _emailController.text,
+                                    _passwordController.text,
+                                  );
+                            }
+                          },
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account?",
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/signup'),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            color: Color(0xFF55C57A),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

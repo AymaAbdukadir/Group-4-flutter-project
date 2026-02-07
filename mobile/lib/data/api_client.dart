@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../config/constants.dart';
 
 final apiClientProvider = Provider((ref) => ApiClient());
 
@@ -10,7 +11,7 @@ class ApiClient {
 
   ApiClient() {
     BaseOptions options = BaseOptions(
-    baseUrl: 'http://localhost:3000/api/v1',
+      baseUrl: AppConstants.apiBaseUrl,
 // For Android Emulator
       connectTimeout: const Duration(milliseconds: 5000),
       receiveTimeout: const Duration(milliseconds: 3000),

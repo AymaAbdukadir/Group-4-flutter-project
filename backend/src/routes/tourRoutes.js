@@ -1,18 +1,35 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
     .route('/')
     .get(tourController.getAllTours)
-    .post(authController.protect, tourController.createTour);
+    .post(
+        authController.protect,
+        authController.restrictTo('admin'),
+        tourController.uploadTourPhoto,
+        tourController.createTour
+    );
 
 router
     .route('/:id')
     .get(tourController.getTour)
-    .patch(authController.protect, tourController.updateTour)
-    .delete(authController.protect, tourController.deleteTour);
+    .patch(
+        authController.protect,
+        authController.restrictTo('admin'),
+        tourController.uploadTourPhoto,
+        tourController.updateTour
+    )
+    .delete(
+        authController.protect,
+        authController.restrictTo('admin'),
+        tourController.deleteTour
+    );
 
 module.exports = router;

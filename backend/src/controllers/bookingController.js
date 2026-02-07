@@ -2,7 +2,10 @@ const Booking = require('../models/bookingModel');
 
 exports.getAllBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find();
+        let filter = {};
+        if (req.user.role !== 'admin') filter = { user: req.user.id };
+
+        const bookings = await Booking.find(filter);
 
         res.status(200).json({
             status: 'success',
@@ -21,6 +24,7 @@ exports.getAllBookings = async (req, res) => {
 
 exports.createBooking = async (req, res) => {
     try {
+        if (!req.body.user) req.body.user = req.user.id;
         const newBooking = await Booking.create(req.body);
 
         res.status(201).json({

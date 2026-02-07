@@ -5,11 +5,11 @@ const path = require("path");
 
 const app = express();
 
-app.use("/img", express.static(path.join(__dirname, "public/img")));
-
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use("/img", express.static(path.join(__dirname, "../public/img")));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

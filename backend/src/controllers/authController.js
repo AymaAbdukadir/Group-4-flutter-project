@@ -17,7 +17,13 @@ const createSendToken = (user, statusCode, res) => {
         status: 'success',
         token,
         data: {
-            user
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                photo: user.photo
+            }
         }
     });
 };
@@ -105,4 +111,20 @@ exports.protect = async (req, res, next) => {
             message: 'Invalid token'
         });
     }
+};
+
+// Middleware to restrict access to specific roles
+// Usage: restrictTo('admin', 'lead-guide')
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        // roles is an array like ['admin', 'lead-guide']
+        // req.user is set by the protect middleware
+        if (!req.user || !roles.includes(req.user.role)) {
+            return res.status(403).json({
+                status: 'fail',
+                message: 'You do not have permission to perform this action'
+            });
+        }
+        next();
+    };
 };

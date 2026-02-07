@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/constants.dart';
 import 'tour_controller.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -55,20 +56,38 @@ class HomeScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image section
                       Stack(
                         children: [
-                          Container(
-                            height: 190,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                              color: Colors.grey[300],
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            child: const Icon(Icons.landscape,
-                                size: 60, color: Colors.grey),
+                            child: Image.network(
+                              '${AppConstants.toursImageUrl}/${tour.imageCover}',
+                              height: 190,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 190,
+                                  width: double.infinity,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.landscape,
+                                      size: 60, color: Colors.grey),
+                                );
+                              },
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  height: 190,
+                                  width: double.infinity,
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
 
                           // price badge

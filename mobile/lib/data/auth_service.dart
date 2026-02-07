@@ -18,7 +18,12 @@ class AuthService {
         'email': email,
         'password': password,
       });
-      return response.data;
+      
+      // Return both token and user data
+      return {
+        'token': response.data['token'],
+        'user': response.data['data']['user'],
+      };
     } on DioException catch (e) {
       if (e.response != null) {
         throw Exception(e.response!.data['message']);
@@ -36,7 +41,12 @@ class AuthService {
         'password': password,
         'passwordConfirm': passwordConfirm,
       });
-      return response.data;
+      
+      // Return both token and user data
+      return {
+        'token': response.data['token'],
+        'user': response.data['data']['user'],
+      };
     } on DioException catch (e) {
        if (e.response != null) {
         throw Exception(e.response!.data['message']);
